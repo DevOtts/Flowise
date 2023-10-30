@@ -6,15 +6,16 @@ import { BaseRetriever } from 'langchain/schema/retriever'
 import { BufferMemory, BufferMemoryInput } from 'langchain/memory'
 import { PromptTemplate } from 'langchain/prompts'
 import { ConsoleCallbackHandler, CustomChainHandler, additionalCallbacks } from '../../../src/handler'
-import {
-    default_map_reduce_template,
-    default_qa_template,
-    qa_template,
-    map_reduce_template,
-    CUSTOM_QUESTION_GENERATOR_CHAIN_PROMPT,
-    refine_question_template,
-    refine_template
-} from './prompts'
+
+// import {
+//     default_map_reduce_template,
+//     default_qa_template,
+//     qa_template,
+//     map_reduce_template,
+//     CUSTOM_QUESTION_GENERATOR_CHAIN_PROMPT,
+//     refine_question_template,
+//     refine_template
+// } from './prompts'
 
 class ConversationalRetrievalQAChain_Chains implements INode {
     label: string
@@ -27,7 +28,7 @@ class ConversationalRetrievalQAChain_Chains implements INode {
     description: string
     inputs: INodeParams[]
 
-    constructor() {
+    constructor() {        
         this.label = 'Conversational Retrieval QA Chain'
         this.name = 'conversationalRetrievalQAChain'
         this.version = 1.0
@@ -94,17 +95,79 @@ class ConversationalRetrievalQAChain_Chains implements INode {
                 ],
                 additionalParams: true,
                 optional: true
+            },
+            {
+                label: 'Default Internal Prompt Language',
+                name: 'promptLanguage',
+                type: 'options',
+                options: [
+                    {
+                        label: 'English',
+                        name: 'en_us'
+                    },
+                    {
+                        label: 'Spanish',
+                        name: 'es_es'
+                    },
+                    {
+                        label: 'Portuguese (Brazil)',
+                        name: 'pt_br'
+                    },
+                    {
+                        label: 'French',
+                        name: 'fr_fr'
+                    },
+                    {
+                        label: 'German',
+                        name: 'de_de'
+                    },
+                    {
+                        label: 'Italian',
+                        name: 'it_it'
+                    }
+                ],
+                additionalParams: true,
+                optional: true
             }
         ]
     }
+
+    async importPromptsBasedOnLanguage(promptLanguage: string) {
+        switch(promptLanguage) {
+            case 'pt_br':
+                return await import('./language/pt_br/prompts');
+            case 'es_es':
+                return await import('./language/es_es/prompts');
+            case 'fr_fr':
+                return await import('./language/es_es/prompts');
+            case 'de_de':
+                return await import('./language/es_es/prompts');
+            case 'it_it':
+                return await import('./language/es_es/prompts');
+            case 'en_us':
+            default:
+                return await import('./language/en_us/prompts');
+        }
+    }
+    
 
     async init(nodeData: INodeData): Promise<any> {
         const model = nodeData.inputs?.model as BaseLanguageModel
         const vectorStoreRetriever = nodeData.inputs?.vectorStoreRetriever as BaseRetriever
         const systemMessagePrompt = nodeData.inputs?.systemMessagePrompt as string
         const returnSourceDocuments = nodeData.inputs?.returnSourceDocuments as boolean
-        const chainOption = nodeData.inputs?.chainOption as string
+        const chainOption = nodeData.inputs?.chainOption as string        
         const externalMemory = nodeData.inputs?.memory
+        const promptLanguage = nodeData.inputs?.promptLanguage as string
+        const {
+            default_map_reduce_template,
+            default_qa_template,
+            qa_template,
+            map_reduce_template,
+            CUSTOM_QUESTION_GENERATOR_CHAIN_PROMPT,
+            refine_question_template,
+            refine_template
+        } = await this.importPromptsBasedOnLanguage(promptLanguage);
 
         const obj: any = {
             verbose: process.env.DEBUG === 'true' ? true : false,
