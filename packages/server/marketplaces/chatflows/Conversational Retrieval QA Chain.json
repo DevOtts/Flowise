@@ -555,6 +555,40 @@
                         "additionalParams": true,
                         "optional": true,
                         "id": "conversationalRetrievalQAChain_0-input-chainOption-options"
+                    },
+                    {
+                        "label": "Default Internal Prompt Language",
+                        "name": "promptLanguage",
+                        "type": "options",
+                        "options": [
+                            {
+                                "label": "English",
+                                "name": "en_us"
+                            },
+                            {
+                                "label": "Spanish",
+                                "name": "es_es"
+                            },
+                            {
+                                "label": "Portuguese",
+                                "name": "pt_br"
+                            },
+                            {
+                                "label": "French",
+                                "name": "fr_fr"
+                            },
+                            {
+                                "label": "German",
+                                "name": "de_de"
+                            },
+                            {
+                                "label": "Italian",
+                                "name": "it_it"
+                            }
+                        ],
+                        "additionalParams": true,
+                        "optional": true,
+                        "id": "conversationalRetrievalQAChain_0-input-promptLanguage-options"
                     }
                 ],
                 "inputAnchors": [
